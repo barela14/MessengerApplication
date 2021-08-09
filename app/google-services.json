@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "575704048639",
+    "project_id": "messengerapplication-dfb41",
+    "storage_bucket": "messengerapplication-dfb41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:575704048639:android:4797e77023b1d573e9fdca",
+        "android_client_info": {
+          "package_name": "ge.takoba18ibare18.messengerapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "575704048639-021r4v08qbf78b0mll490d7ojip9il07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIUD7sdWg0njl7NINh50EwIpZBWUMb4yM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "575704048639-021r4v08qbf78b0mll490d7ojip9il07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
