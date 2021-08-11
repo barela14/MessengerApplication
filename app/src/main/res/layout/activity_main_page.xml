@@ -42,6 +42,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/roundshape"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
                     app:startIconDrawable="@android:drawable/ic_menu_search">
 
                     <EditText

@@ -44,6 +44,7 @@
                     android:orientation="vertical">
 
                     <ImageButton
+                        android:id="@+id/backButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/ic_baseline_arrow_back_ios_24"
@@ -80,7 +81,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -89,22 +89,35 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textField"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@drawable/roundshape">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <EditText
-            android:layout_width="match_parent"
+            android:id="@+id/editText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:background="@drawable/roundshape"
-            android:backgroundTint="#d4defd"
-            android:drawableEnd="@drawable/ic_baseline_brightness_1_24"
-            android:hint="@string/message"
-            android:padding="20dp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:backgroundTint="@color/search_color"
+            android:hint="Search"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:textSize="25sp" />
+
+        <ImageButton
+            android:id="@+id/pastePin"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-60dp"
+            android:paddingBottom="5dp"
+            android:src="@drawable/ic_baseline_brightness_1_24" />
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

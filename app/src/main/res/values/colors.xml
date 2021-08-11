@@ -11,4 +11,5 @@
     <color name="buttonTextColor">#5c5c5c</color>
     <color name="editTextColor">#f3f6ff</color>
     <color name="fab_color">#5479f1</color>
+    <color name="search_color">#d4defd</color>
 </resources>

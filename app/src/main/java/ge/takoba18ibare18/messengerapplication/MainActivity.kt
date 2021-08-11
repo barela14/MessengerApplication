@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val myRef = database.getReference("message")
         myRef.setValue("Hello, World!")
 
-        val intent = Intent(this, FriendsActivity::class.java)
+        val intent = Intent(this, SignUpActivity::class.java)
         startActivity(intent)
     }
 }
