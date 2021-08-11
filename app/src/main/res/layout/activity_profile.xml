@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfileActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_margin="32dp"
+            android:contentDescription="@string/profile_image"
+            app:srcCompat="@drawable/avatar_image_placeholder" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/roundshape"
+            android:gravity="center"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="IRAKLI BARELADZE"
+            android:textColor="@color/buttonTextColor"
+            android:textSize="22sp" />
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/roundshape"
+            android:gravity="center"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:text="MANAGER"
+            android:textColor="@color/buttonTextColor"
+            android:textSize="22sp" />
+
+        <Button
+            android:id="@+id/signInButton"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/buttonColor"
+            android:text="UPDATE"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/signUpButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:text="SIGN OUT"
+            android:textColor="@color/buttonTextColor"
+            android:textSize="18sp"
+            app:strokeColor="@color/buttonTextColor" />
+    </LinearLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/fab_color"
+        app:layout_anchor="@id/bottomAppbar"
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:tint="@color/white" />
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        app:hideOnScroll="true">
+
+
+        <ImageButton
+            android:id="@+id/homeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="50dp"
+            android:background="@drawable/ic_baseline_home_24" />
+
+        <ImageButton
+            android:id="@+id/profileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:backgroundTint="@color/fab_color"
+            android:layout_marginEnd="66dp"
+            android:background="@drawable/ic_baseline_settings_24" />
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

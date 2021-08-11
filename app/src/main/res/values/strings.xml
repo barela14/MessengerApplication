@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MessengerApplication</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="search">Search</string>
+    <string name="message">Message</string>
+    <string name="profile_image">profile_image</string>
 </resources>

@@ -1,5 +1,6 @@
 package ge.takoba18ibare18.messengerapplication
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -17,5 +18,8 @@ class MainActivity : AppCompatActivity() {
         val database = Firebase.database
         val myRef = database.getReference("message")
         myRef.setValue("Hello, World!")
+
+        val intent = Intent(this, FriendsActivity::class.java)
+        startActivity(intent)
     }
 }
