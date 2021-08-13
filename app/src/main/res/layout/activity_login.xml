@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:id="@+id/main_layout">
 
 
     <LinearLayout
@@ -26,7 +27,7 @@
             app:srcCompat="@drawable/avatar_image_placeholder" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/nickname"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -38,7 +39,7 @@
             android:textSize="22sp" />
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/password"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:background="@drawable/roundshape"

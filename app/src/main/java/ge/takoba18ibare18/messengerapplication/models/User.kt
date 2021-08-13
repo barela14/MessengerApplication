@@ -8,5 +8,5 @@ data class User(
     val nickname: String? = null,
     val password: String? = null,
     val profession: String? = null,
-    val profileImage: ImageView? = null
+    val profileImageURI: String? = null
 )

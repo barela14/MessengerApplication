@@ -4,9 +4,9 @@ import com.google.firebase.database.IgnoreExtraProperties
 import java.util.*
 
 @IgnoreExtraProperties
-data class Message(
-    val sender: String? = null,
-    val receiver: String? = null,
-    val message: String? = null,
-    val sendTime: Date? = null
+data class Chat(
+    val friend: String? = null,
+    val lastMessage: String? = null,
+    val lastEdit: Date? = null,
+    val friendImage: String? = null
 )
