@@ -1,10 +1,10 @@
 package ge.takoba18ibare18.messengerapplication.models
 
 import com.google.firebase.database.IgnoreExtraProperties
-import java.util.*
 
 @IgnoreExtraProperties
 data class Chat(
-    val friend: String? = null,
-    val lastMessage: Message? = null
+    val id: String? = null,
+    val friend: User? = null,
+    val lastMessage: MyMessage? = null
 )

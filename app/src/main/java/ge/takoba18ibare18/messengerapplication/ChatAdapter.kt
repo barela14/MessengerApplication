@@ -1,51 +1,75 @@
 package ge.takoba18ibare18.messengerapplication
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import ge.takoba18ibare18.messengerapplication.models.MyMessage
 
 
-class ChatAdapter() :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(var messages: ArrayList<MyMessage>, var sharedPreferences: SharedPreferences) :
+    RecyclerView.Adapter<MessagesViewHolder>() {
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessagesViewHolder {
+//        return if (viewType == SENT) {
+//            SentViewHolder(
+//                LayoutInflater.from(parent.context)
+//                    .inflate(R.layout.sent_message_cell, parent, false)
+//            )
+//        } else {
+//            ReceivedViewHolder(
+//                LayoutInflater.from(parent.context)
+//                    .inflate(R.layout.received_message_cell, parent, false)
+//            )
+//        }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if(viewType == SENT) {
-            SentViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.sent_message_cell, parent, false))
+        val view: View = if (viewType == SENT) {
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.sent_message_cell, parent, false)
+        } else {
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.received_message_cell, parent, false)
         }
-        else {
-            ReceivedViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.received_message_cell, parent, false))
-        }
+
+        return MessagesViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return 20
+        return messages.count()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(position % 2 == 0) {
+        val sender = messages[position].sender
+
+        return if (sender == sharedPreferences.getString("nickname", "")) {
             SENT
         } else {
             RECEIVED
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MessagesViewHolder, position: Int) {
+        val message = messages[position].text
+        val date = messages[position].sendTime
 
+        val messageTextView: TextView = holder.itemView.findViewById(R.id.text)
+        val dateTextView: TextView = holder.itemView.findViewById(R.id.time)
+
+
+        messageTextView.text = message
+        dateTextView.text = date.toString()
     }
 
-    inner class SentViewHolder(view : View) : RecyclerView.ViewHolder(view) {
 
-    }
-
-    inner class ReceivedViewHolder(view : View) : RecyclerView.ViewHolder(view) {
-
-    }
-
-    companion object{
+    companion object {
         private const val SENT = 0
-        private const val RECEIVED = 1;
+        private const val RECEIVED = 1
     }
 
 }
+
+
+class MessagesViewHolder(view: View) : RecyclerView.ViewHolder(view)

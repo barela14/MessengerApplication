@@ -21,8 +21,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val newIntent = Intent(this, LoginActivity::class.java)
+        startActivity(newIntent)
         initButtons()
         sharedPreferences = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE)
+        //sharedPreferences.edit().clear().commit()
     }
 
     private fun initButtons() {

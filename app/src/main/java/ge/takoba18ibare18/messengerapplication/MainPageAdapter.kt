@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class MainPageAdapter() :
-    RecyclerView.Adapter<RecyclerViewViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewViewHolder {
@@ -21,7 +21,7 @@ class MainPageAdapter() :
         return 20
     }
 
-    override fun onBindViewHolder(holder: RecyclerViewViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
     }
 }

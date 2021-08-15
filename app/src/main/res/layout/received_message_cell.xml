@@ -23,16 +23,17 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/textView2"
+                android:textColor="@color/black"
+                android:id="@+id/text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:maxWidth="250dp"
-                android:text="Tamuna Kobakhidze-Javakhishvili Sosos asuli da dzaan magari" />
+                android:text="Tamuna Kobakhidze-Javakhishvili ................. Irakli Bareladze" />
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
