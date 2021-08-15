@@ -72,9 +72,9 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         val tmp = snapshot.getValue<Map<String, User>>()
                         val user = tmp!!.iterator().next().value
-                        savePreferences(user)
                         clearEditTexts()
                         if (user.password == password) {
+                            savePreferences(user)
                             val intent = Intent(this@LoginActivity, MainPageActivity::class.java)
                             startActivity(intent)
                         } else {
