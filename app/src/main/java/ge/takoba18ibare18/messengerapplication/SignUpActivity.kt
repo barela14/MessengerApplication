@@ -5,12 +5,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -21,7 +18,6 @@ import ge.takoba18ibare18.messengerapplication.models.User
 
 class SignUpActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
     private lateinit var nicknameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var professionEditText: EditText
@@ -64,10 +60,6 @@ class SignUpActivity : AppCompatActivity() {
         nicknameEditText.text.clear()
         passwordEditText.text.clear()
         professionEditText.text.clear()
-    }
-
-    private fun showToast(text: String) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     private fun savePreferences(user: User) {
@@ -115,7 +107,6 @@ class SignUpActivity : AppCompatActivity() {
         val profession = professionEditText.text.toString()
 
         if (nickname.isEmpty() || password.isEmpty() || profession.isEmpty()) {
-            showToast("Some fields are empty!")
             showSnackBar("Some fields are empty!")
         } else {
             val usersReference = database.getReference("Users")
@@ -125,12 +116,10 @@ class SignUpActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
                         createUser()
-                        showToast("Registration successful!")
                         showSnackBar("Registration successful!")
                         clearEditTexts()
                         startActivity(Intent(this@SignUpActivity, MainPageActivity::class.java))
                     } else {
-                        showToast("User with that nickname already exists!")
                         showSnackBar("User with that nickname already exists!")
                     }
                 }

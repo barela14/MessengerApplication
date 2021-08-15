@@ -5,28 +5,23 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Base64
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import ge.takoba18ibare18.messengerapplication.models.User
-import java.io.ByteArrayOutputStream
+import com.google.firebase.storage.FirebaseStorage
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -38,12 +33,12 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var id: String
     private lateinit var nickname: String
     private lateinit var profession: String
-    private lateinit var imageUri: String
+    private lateinit var imageUri: Uri
+    private lateinit var imageUriString: String
     private lateinit var updateButton: Button
     private lateinit var signOutButton: Button
     private lateinit var homeButton: ImageButton
-    private var uri: String = ""
-
+    private lateinit var fab: FloatingActionButton
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,14 +50,17 @@ class ProfileActivity : AppCompatActivity() {
         professionEditText.setText(profession)
 
         setProfileImage()
-
         setListeners()
     }
 
     private fun setProfileImage() {
-        if (imageUri != "") {
+        if (imageUriString == "") {
             Glide.with(this)
-                .load(BitmapDrawable(stringToBitMap(imageUri)))
+                .load(R.drawable.avatar_image_placeholder)
+                .circleCrop().into(profileImage)
+        } else {
+            Glide.with(this)
+                .load(Uri.parse(imageUriString))
                 .circleCrop().into(profileImage)
         }
     }
@@ -88,6 +86,11 @@ class ProfileActivity : AppCompatActivity() {
         updateButton.setOnClickListener {
             updateUserInfo()
         }
+
+        fab.setOnClickListener {
+            val newIntent = Intent(this, FriendsActivity::class.java)
+            startActivity(newIntent)
+        }
     }
 
     private fun updateUserInfo() {
@@ -107,43 +110,24 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun updateImageAndProfession() {
         val newProfession = professionEditText.text.toString()
-
         val usersReference = database.getReference("Users")
-        val query = usersReference.orderByChild("nickname").equalTo(nickname)
 
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
+        usersReference.child(id).child("profession").setValue(newProfession)
+        usersReference.child(id).child("profileImageURI").setValue(imageUriString)
 
-            override fun onCancelled(error: DatabaseError) {
+        with(sharedPreferences.edit()) {
+            putString("profession", newProfession)
+            apply()
+        }
 
-            }
+        with(sharedPreferences.edit()) {
+            putString("imageUri", imageUriString)
+            apply()
+        }
 
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    //შეიძლება
-
-                    val map = snapshot.getValue<Map<String, User>>()
-                    val iterator = map!!.iterator().next()
-                    val userId = iterator.key
-
-                    usersReference.child(userId).child("profession").setValue(newProfession)
-                    usersReference.child(userId).child("profileImageURI")
-                        .setValue(uri)
-
-                    with(sharedPreferences.edit()) {
-                        putString("profession", newProfession)
-                        apply()
-                    }
-
-                    with(sharedPreferences.edit()) {
-                        putString("imageUri", uri)
-                        apply()
-                    }
-
-                    showSnackBar("Values updated successfully")
-                }
-            }
-        })
+        showSnackBar("Values updated successfully")
     }
+
 
     private fun updateValues() {
         val newNickname = nicknameEditText.text.toString()
@@ -157,8 +141,7 @@ class ProfileActivity : AppCompatActivity() {
                 if (!snapshot.exists() || newNickname == nickname) {
                     usersReference.child(id).child("nickname").setValue(newNickname)
                     usersReference.child(id).child("profession").setValue(newProfession)
-                    usersReference.child(id).child("profileImageURI").setValue(uri)
-
+                    usersReference.child(id).child("profileImageURI").setValue(imageUriString)
                     savePreferences()
                     showSnackBar("Values updated successfully")
                 } else {
@@ -178,7 +161,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 with(sharedPreferences.edit()) {
-                    putString("imageUri", uri)
+                    putString("imageUri", imageUriString)
                     apply()
                 }
             }
@@ -203,40 +186,27 @@ class ProfileActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
-            val URI = data.data
-
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, URI)
-            val bitmapDrawable = BitmapDrawable(bitmap)
+            imageUri = data.data!!
 
             Glide.with(this)
-                .load(bitmapDrawable)
+                .load(imageUri)
                 .circleCrop()
                 .into(profileImage)
 
-            uri = bitMapToString(bitmap)!!
-
+            imageUriString = imageUri.toString()
+            uploadImageToFirebaseStorage(imageUri)
         }
     }
 
-    private fun stringToBitMap(encodedString: String?): Bitmap? {
-        return try {
-            val encodeByte =
-                Base64.decode(encodedString, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(
-                encodeByte, 0,
-                encodeByte.size
-            )
-        } catch (e: Exception) {
-            e.message
-            null
-        }
-    }
+    private fun uploadImageToFirebaseStorage(uri: Uri) {
+        val filename = sharedPreferences.getString("id", "")
+        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
-    private fun bitMapToString(bitmap: Bitmap): String? {
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val b: ByteArray = baos.toByteArray()
-        return Base64.encodeToString(b, Base64.DEFAULT)
+        ref.putFile(uri).addOnSuccessListener {
+            ref.downloadUrl.addOnSuccessListener {
+                imageUriString = it.toString()
+            }
+        }
     }
 
     private fun initPrivateVariables() {
@@ -248,10 +218,11 @@ class ProfileActivity : AppCompatActivity() {
         updateButton = findViewById(R.id.update)
         signOutButton = findViewById(R.id.signOutButton)
         homeButton = findViewById(R.id.homeButton)
+        fab = findViewById(R.id.fab_button)
 
         id = sharedPreferences.getString("id", "")!!
         nickname = sharedPreferences.getString("nickname", "")!!
         profession = sharedPreferences.getString("profession", "")!!
-        imageUri = sharedPreferences.getString("imageUri", "")!!
+        imageUriString = sharedPreferences.getString("imageUri", "")!!
     }
 }

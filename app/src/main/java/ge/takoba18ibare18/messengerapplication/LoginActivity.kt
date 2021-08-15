@@ -5,14 +5,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -36,7 +31,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         initPrivateVariables()
+        logInChecker()
         setListeners()
+    }
+
+    private fun logInChecker() {
+        if (sharedPreferences.getString("nickname", "") != "") {
+            val intent = Intent(this, MainPageActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun showSnackBar(text: String) {
@@ -67,15 +70,16 @@ class LoginActivity : AppCompatActivity() {
                     if (!snapshot.exists()) {
                         showSnackBar("Either nickname or password is incorrect")
                     } else {
-                        val currentUser = sharedPreferences.getString("nickname", "")
-                        Log.d("temo", currentUser!!)
-
                         val tmp = snapshot.getValue<Map<String, User>>()
                         val user = tmp!!.iterator().next().value
                         savePreferences(user)
                         clearEditTexts()
-                        val intent = Intent(this@LoginActivity, MainPageActivity::class.java)
-                        startActivity(intent)
+                        if (user.password == password) {
+                            val intent = Intent(this@LoginActivity, MainPageActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            showSnackBar("Either nickname or password is incorrect")
+                        }
                     }
                 }
 
@@ -121,13 +125,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-    }
-
-    public override fun onStart() {
-        super.onStart()
-
-        val currentUser = sharedPreferences.getString("nickname", "")
-        Log.d("temo", currentUser!!)
     }
 
     private fun setListeners() {

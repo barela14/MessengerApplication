@@ -3,19 +3,13 @@ package ge.takoba18ibare18.messengerapplication
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Build
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
-import android.util.Base64
-import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.database.DataSnapshot
@@ -39,146 +33,127 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var sendEditText: EditText
     private lateinit var adapter: ChatAdapter
     private lateinit var database: FirebaseDatabase
-    private lateinit var userId: String
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var receiver: User
+    private lateinit var sender: User
+    private lateinit var messages: ArrayList<MyMessage>
+    private lateinit var chatId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-
         initPrivateVariables()
+        getUsers()
         setListeners()
-        getUsers(userId)
     }
 
-    private fun setListeners() {
-        backButton.setOnClickListener {
-            val intent = Intent(this, FriendsActivity::class.java)
-            startActivity(intent)
+    private fun getMessages(map: Map<String, MyMessage>) {
+        if (map.count() > 0) {
+            for (message in map.values) {
+                messages.add(message)
+            }
         }
-        sendButton.setOnClickListener {
-            //
-        }
+        messages.sortWith(compareBy { it.sendTime })
+
+        recyclerView.adapter = ChatAdapter(messages, sharedPreferences)
     }
 
-    private fun getChat(sender: User, receiver: User) {
+    private fun fetchChat() {
         val chatReference = database.getReference("Chats")
 
-        val id = if (sender.id!! > receiver.id!!) {
+        chatId = if (sender.id!! > receiver.id!!) {
             receiver.id + " " + sender.id
         } else {
             sender.id + " " + receiver.id
         }
 
-        val query = chatReference.orderByKey().equalTo(id)
-
-
+        val query = chatReference.child(chatId).orderByKey()
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    var k = 2
-                    val map = snapshot.getValue<Map<String, Map<String, MyMessage>>>()
-
-                    createChat(map!!)
-                } else {
-                    var k = 2
-                }
-            }
-
-            private fun createChat(map: Map<String, Map<String, MyMessage>>) {
-                var res = arrayListOf<MyMessage>()
-                val myMap = map.iterator().next().value
-                for (message in myMap.values) {
-                    res.add(message)
-                }
-
-                recyclerView.adapter = ChatAdapter(res, sharedPreferences)
-
-//                    usersReference.push().key?.let {
-//                        val chat = Chat(it, receiver, MyMessage(sender, receiver, ""))
-//                        usersReference.child(it).setValue(chat)
-//                    }
-            }
-
             override fun onCancelled(error: DatabaseError) {
 
             }
 
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val map = snapshot.getValue<Map<String, MyMessage>>()
+                    getMessages(map!!)
+                } else {
+                    //create New Chat
+                    chatReference.child(chatId).push().key
+                }
+            }
         })
     }
 
+    private fun getUsers() {
+        receiver = intent.extras?.getSerializable("friend") as User
+        setFriendInfo()
+        getSender()
+    }
 
-    private fun getUsers(friendId: String) {
+    private fun getSender() {
+        val myNickname = sharedPreferences.getString("nickname", "")
         val usersReference = database.getReference("Users")
-        val query = usersReference.orderByKey().equalTo(friendId)
-
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
+        val newQuery = usersReference.orderByChild("nickname").equalTo(myNickname)
+        newQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
 
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-
-                    val map = snapshot.getValue<Map<String, User>>()
-                    val iterator = map!!.iterator().next().value
-                    receiver = iterator
-                    nickname.text = iterator.nickname
-                    profession.text = iterator.profession
-
-//                    Glide.with(this@ChatActivity)
-//                        .load(stringToBitMap(iterator.profileImageURI))
-//                        .circleCrop().into(profileImage)
-
-                    val sender = sharedPreferences.getString("nickname", "")
-                    val newQuery = usersReference.orderByChild("nickname").equalTo(sender)
-
-                    newQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.exists()) {
-
-                                val senderMap = snapshot.getValue<Map<String, User>>()
-                                val senderIterator = senderMap!!.iterator().next().value
-                                getChat(senderIterator, receiver)
-                            } else {
-
-                            }
-                        }
-
-                    })
-                } else {
-
+                    val senderMap = snapshot.getValue<Map<String, User>>()
+                    val senderIterator = senderMap!!.iterator().next().value
+                    sender = senderIterator
+                    fetchChat()
                 }
-
             }
         })
-
-
     }
 
-    private fun stringToBitMap(encodedString: String?): Bitmap? {
-        return try {
-            val encodeByte =
-                Base64.decode(encodedString, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(
-                encodeByte, 0,
-                encodeByte.size
-            )
-        } catch (e: Exception) {
-            e.message
-            null
+    private fun sendNewMessage() {
+        if (sendEditText.text.isNotEmpty()) {
+            val text = sendEditText.text.toString()
+            val time = System.currentTimeMillis()
+            val newMessage = MyMessage(sender.nickname, receiver.nickname, text, time)
+            val chatReference = database.getReference("Chats")
+            messages.add(newMessage)
+
+            chatReference.child(chatId).push().key?.let {
+                chatReference.child(chatId).child(it).setValue(newMessage)
+            }
+
+            recyclerView.adapter = ChatAdapter(messages, sharedPreferences)
+            sendEditText.text.clear()
+        }
+    }
+
+    private fun setFriendInfo() {
+        nickname.text = receiver.nickname
+        profession.text = receiver.profession
+        if (receiver.profileImageURI == "" || receiver.profileImageURI == null) {
+            Glide.with(this@ChatActivity)
+                .load(R.drawable.avatar_image_placeholder)
+                .circleCrop().into(profileImage)
+        } else {
+            Glide.with(this@ChatActivity)
+                .load(Uri.parse(receiver.profileImageURI))
+                .circleCrop().into(profileImage)
+        }
+    }
+
+    private fun setListeners() {
+        backButton.setOnClickListener {
+            this.onBackPressed()
+        }
+
+        sendButton.setOnClickListener {
+            sendNewMessage()
         }
     }
 
     private fun initPrivateVariables() {
-        userId = intent.extras?.getString("userId")!!
         database = Firebase.database
         sharedPreferences = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE)
         recyclerView = findViewById(R.id.recyclerView)
@@ -190,5 +165,6 @@ class ChatActivity : AppCompatActivity() {
         profileImage = findViewById(R.id.profile_image)
         sendButton = findViewById(R.id.sendButton)
         sendEditText = findViewById(R.id.editText)
+        messages = arrayListOf()
     }
 }

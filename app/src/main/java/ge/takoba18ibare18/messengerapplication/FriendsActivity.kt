@@ -3,7 +3,6 @@ package ge.takoba18ibare18.messengerapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DataSnapshot
