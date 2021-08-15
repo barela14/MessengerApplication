@@ -1,8 +1,11 @@
 package ge.takoba18ibare18.messengerapplication
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -24,6 +27,7 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var professionEditText: EditText
     private lateinit var signUpButton: Button
     private lateinit var database: FirebaseDatabase
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +45,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun initPrivateVariables() {
         database = Firebase.database
+        sharedPreferences = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE)
         nicknameEditText = findViewById(R.id.nickname)
         passwordEditText = findViewById(R.id.password)
         professionEditText = findViewById(R.id.profession)
@@ -63,6 +68,45 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun savePreferences(user: User) {
+        with(sharedPreferences.edit()) {
+            putString("id", user.id)
+            apply()
+        }
+
+        with(sharedPreferences.edit()) {
+            putString("nickname", user.nickname)
+            apply()
+        }
+
+        with(sharedPreferences.edit()) {
+            putString("nickname", user.nickname)
+            apply()
+        }
+
+        with(sharedPreferences.edit()) {
+            putString("password", user.password)
+            apply()
+        }
+
+        with(sharedPreferences.edit()) {
+            putString("profession", user.profession)
+            apply()
+        }
+
+        if (user.profileImageURI == null) {
+            with(sharedPreferences.edit()) {
+                putString("imageUri", "")
+                apply()
+            }
+        } else {
+            with(sharedPreferences.edit()) {
+                putString("imageUri", user.profileImageURI)
+                apply()
+            }
+        }
     }
 
     private fun signUp() {
@@ -92,9 +136,10 @@ class SignUpActivity : AppCompatActivity() {
                 }
 
                 private fun createUser() {
-                    val myUser = User(nickname, password, profession)
                     usersReference.push().key?.let {
+                        val myUser = User(it, nickname, password, profession)
                         usersReference.child(it).setValue(myUser)
+                        savePreferences(User(it, nickname, password, profession))
                     }
                 }
 

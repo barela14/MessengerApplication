@@ -5,8 +5,8 @@ import java.util.*
 
 @IgnoreExtraProperties
 data class Message(
-    val sender: String? = null,
-    val receiver: String? = null,
-    val message: String? = null,
+    val sender: User? = null,
+    val receiver: User? = null,
+    val text: String? = null,
     val sendTime: Date? = null
 )

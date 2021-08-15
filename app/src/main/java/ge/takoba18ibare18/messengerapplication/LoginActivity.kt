@@ -74,11 +74,17 @@ class LoginActivity : AppCompatActivity() {
                         val user = tmp!!.iterator().next().value
                         savePreferences(user)
                         clearEditTexts()
-                        startActivity(Intent(this@LoginActivity, MainPageActivity::class.java))
+                        val intent = Intent(this@LoginActivity, MainPageActivity::class.java)
+                        startActivity(intent)
                     }
                 }
 
                 private fun savePreferences(user: User) {
+                    with(sharedPreferences.edit()) {
+                        putString("id", user.id)
+                        apply()
+                    }
+
                     with(sharedPreferences.edit()) {
                         putString("nickname", user.nickname)
                         apply()
@@ -136,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initPrivateVariables() {
         database = Firebase.database
-        sharedPreferences = getPreferences(Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("PREF_NAME", Context.MODE_PRIVATE)
         nicknameEditText = findViewById(R.id.nickname)
         passwordEditText = findViewById(R.id.password)
         signInButton = findViewById(R.id.signInButton)
