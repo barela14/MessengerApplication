@@ -1,6 +1,5 @@
 package ge.takoba18ibare18.messengerapplication
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
@@ -33,7 +32,7 @@ class FriendsActivity : AppCompatActivity() {
 
     private fun setListeners() {
         backButton.setOnClickListener {
-            startActivity(Intent(this, MainPageActivity::class.java))
+            super.onBackPressed()
         }
     }
 

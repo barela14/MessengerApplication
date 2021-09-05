@@ -1,7 +1,6 @@
 package ge.takoba18ibare18.messengerapplication
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity

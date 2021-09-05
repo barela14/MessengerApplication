@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
                         apply()
                     }
 
-                    if (user.profileImageURI == null) {
+                    if (user.profileImageURI == "" || user.profileImageURI == null) {
                         with(sharedPreferences.edit()) {
                             putString("imageUri", "")
                             apply()
